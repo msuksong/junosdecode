@@ -3,17 +3,19 @@
 ## Usage
 ```
 $ python junosdecode.py
-usage: junosdecode.py [-h] [-v] [-e PLAINTEXT | -d SECRET]
+usage: junosdecode.py [-h] [-v] [-r] [-e PLAINTEXT | -d SECRET]
 
 Junos $9$ password en/decrypt script
 
 optional arguments:
   -h, --help            show this help message and exit
   -v, --version         show program's version number and exit
+  -r, --result-only     Output resulting string only
   -e PLAINTEXT, --encrypt PLAINTEXT
                         encrypt plaintext
   -d SECRET, --decrypt SECRET
                         decrypt secret
+
 ```
 
 ## Examples
@@ -33,4 +35,10 @@ original perl version by kevin brintnall
 
 encrypted version: $9$lateMXVb2JGi7-Dk
 decrypted version: hello
+
+$ python junosdecode.py -r -e 'hello'
+$9$BrKEcyLX-Y2avWYoGif5/CA
+
+$ python junosdecode.py -r -d '$9$BrKEcyLX-Y2avWYoGif5/CA'
+hello
 ```

@@ -8,7 +8,8 @@
 ## original: http://search.cpan.org/dist/Crypt-Juniper/lib/Crypt/Juniper.pm
 ## requires python 2.7 due to use of dict comprehension
 ##
-## version 1.0
+## version 1.01 - works with python 3
+##   
 ##
 
 #############################################################################
@@ -16,10 +17,13 @@
 ## by Minsuk Song <msuk.song@gmail.com>, who also knows
 ## very little perl
 ##
+from __future__ import print_function
 
 import sys
 import argparse
 import random
+
+
 
 #################################################################
 ## globals
@@ -51,7 +55,7 @@ def _nibble(cref, length):
     nib = cref[0:length]
     rest = cref[length:]
     if len(nib) != length:
-        print "Ran out of characters: hit '%s', expecting %s chars" % (nib, length)
+        print("Ran out of characters: hit '%s', expecting %s chars" % (nib, length))
         sys.exit(1)
     return nib, rest
 
@@ -63,7 +67,7 @@ def _gap(c1, c2):
 def _gap_decode(gaps, dec):
     num = 0
     if len(gaps) != len(dec):
-        print "Nibble and decode size not the same!"
+        print("Nibble and decode size not the same!")
         sys.exit(1)
     for x in range(0, len(gaps)):
         num += gaps[x] * dec[x]
@@ -133,8 +137,10 @@ def juniper_encrypt(plaintext, salt = None):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Junos $9$ password en/decrypt script",
-                          version="1.0")
+    parser = argparse.ArgumentParser(description="Junos $9$ password en/decrypt script")
+    parser.add_argument('-v','--version', action='version', version='%(prog)s 1.01')
+    parser.add_argument("-r","--result-only", action="store_true", dest="resultOnly", help="Output resulting string only")
+    
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-e", "--encrypt", dest="plaintext", help="encrypt plaintext")
     group.add_argument("-d", "--decrypt", dest="secret", help="decrypt secret")
@@ -144,18 +150,28 @@ def main():
         sys.exit(1)
     args = parser.parse_args()
 
-    print "Junos $9$ secrets en/decrypter"
-    print "python version by matt hite/min song"
-    print "original perl version by kevin brintnall\n"
+    if not args.resultOnly:
+        print("Junos $9$ secrets en/decrypter")
+        print("python version by matt hite/min song")
+        print("original perl version by kevin brintnall\n")
+        
     if args.secret:
         encrypted_string = args.secret
-        print "encrypted version: %s" % encrypted_string
-        print "decrypted version: %s" % juniper_decrypt(encrypted_string)
+
+        if args.resultOnly:
+            print(juniper_decrypt(encrypted_string), end='')
+        else:
+            print("encrypted version: %s" % encrypted_string)
+            print("decrypted version: %s" % juniper_decrypt(encrypted_string))
     elif args.plaintext:
         plaintext_string = args.plaintext
-        print "plaintext version: %s" % plaintext_string
-        print "encrypted version: %s" % juniper_encrypt(plaintext_string)
 
+        if args.resultOnly:
+            print(juniper_encrypt(plaintext_string), end='')
+        else:
+            print("plaintext version: %s" % plaintext_string)
+            print("encrypted version: %s" % juniper_encrypt(plaintext_string))
 
 if __name__ == "__main__":
     main()
+	
